@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eventos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <script>
+      const app = Vue.createApp({
+        data() {
+          return {
+            count: 0,
+            zoom: 1,
+            isPressed: false
+          };
+        },
+        watch: {
+          zoom(newZoom) {
+            document.body.style.transform = `scale(${newZoom})`;
+            document.body.style.transformOrigin = "0 0";
+          }
+        },
+        methods: {
+          handlePlusZoomClick() {
+            this.zoom += 0.01;
+           
+          },
+          handleMinusZoomClick() {
+            this.zoom -= 0.01;
+          },
+          handlePlusClick() {
+            this.count++;
+          },
+          handleMinusClick() {
+            this.count--;
+            if (this.count < 0) {
+              this.isPressed = true;
+              this.count = 0;
+              setTimeout(() => {
+                this.isPressed = false;
+              }, 300);
+            }
+          }
+        },
+        template: `
+          <div class="container" :class="{ rotated: isPressed }">
+            <h1 id="title">Contador</h1>
+            <div class="counter">
+              <p>Contador: {{ count }}</p>
+              <button class="icon-plus" @click="handlePlusClick" @dblclick="handlePlusDblClick">
+                <i class="fa-solid fa-plus"></i>
+              </button>
+              <button class="icon-minus" @click="handleMinusClick" @dblclick="handleMinusDblClick">
+                <i class="fa-solid fa-minus"></i>
+              </button>
+            </div>
+          </div>
+        `
+      }).mount('#app');
+    </script>
+  </body>
+</html>
+
+<style>
+  * {
+    font-family: Calibri, Candara, Segoe, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .container {
+    position: relative;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    padding: 40px;
+    text-align: center;
+    transition: transform 0.3s ease;
+  }
+
+  .rotated {
+    transform: rotate(20deg);
+  }
+
+  #title {
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 2rem;
+  }
+
+  .counter {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .counter p {
+    font-size: 1.5rem;
+    color: #555;
+    font-weight: bold;
+  }
+
+  .icon-plus, .icon-minus {
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+    border: none;
+    border-radius: 50%;
+    background: #263a94;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin: 0 10px;
+  }
+
+  .icon-plus:hover, .icon-minus:hover {
+    background: #3b4c9a;
+  }
+
+  .icon-plus:active, .icon-minus:active {
+    transform: scale(0.95);
+  }
+
+  .icon-close {
+    background-color: white;
+    border: none;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: #999;
+    cursor: pointer;
+    transition: color 0.3s;
+  }
+</style>
