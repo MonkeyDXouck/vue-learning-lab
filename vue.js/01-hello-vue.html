@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hello Vue.js</title>
+  <link rel="stylesheet" href="../assets/vue.js.css">
 </head>
 <body>
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -14,11 +15,11 @@
   const app = Vue.createApp({
     data() {
       return {
-        message: "<p>Hola Vue.js</p>"
+        message: "<p>Hi Vue.js</p>"
       }
     },
     template: `
-      <div>
+      <div class="container">
         <h1 v-html="message"></h1>
       </div>
     `

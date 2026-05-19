@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reactividad</title>
+  <link rel="stylesheet" href="../assets/vue.js.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+</head>
+<body>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+  <div id="app"></div>
+
+  <script>
+  const app = Vue.createApp({
+    data() {
+      return {
+        image: {
+            img: "https://www.wearegecko.co.uk/media/50316/mountain-3.jpg",
+            imgAlt: "Image 1",
+            text: "Description"
+          },
+        isFlipped: false,
+        isEditing: false,
+        validationError: ""
+      }
+    },
+    methods: {
+      updateImageText(image, event) {
+        const value = event.target.value
+        image.text = value
+        if (!value.trim()) {
+          this.validationError = "El texto no puede quedar vacío."
+          return
+        }
+        this.validationError = ""
+        this.isEditing = true
+      },
+      flippedCard() {
+        if (this.validationError) {
+          return
+        }
+        this.isFlipped = !this.isFlipped
+        this.isEditing = false
+      }
+    },
+    template: `
+      <div class="container">
+        <div
+          class="card"
+          :class="{ flipped: isFlipped }"
+        >
+          <div @click="flippedCard" class="card-face" style="cursor: pointer;">
+            <img :src="image.img" :alt="image.imgAlt">
+          </div>
+
+          <div class="card-face back">
+            <h1 id="title">{{ image.text }}</h1>
+            <div class="content">
+              <input id="text-image" :value="image.text" @input="updateImageText(image, $event)" aria-label="Editar texto" />
+              <p class="error-message" v-if="validationError">{{ validationError }}</p>
+              <button type="button" class="button-icon button-flip button-icon--secondary" :aria-label="isEditing ? 'Save' : 'Back'" @click="flippedCard" :disabled="!!validationError">
+                <i v-if="isEditing" class="fa-solid fa-floppy-disk" aria-hidden="true"></i>
+                <i v-else class="fa-solid fa-rotate-left" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `
+  })
+  app.mount("#app")
+  </script>
+</body>
+</html>
