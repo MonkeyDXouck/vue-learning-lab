@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Listas y Condicionales</title>
+  <link rel="stylesheet" href="../assets/vue.js.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script>
+    const { createApp } = Vue;
+
+    createApp({
+      data() {
+        return {
+          amount: 1,
+          boxes: []
+        }
+      },
+      mounted() {
+        this.generateBoxes()
+      },
+      methods: {
+        generateSmallSpan(min, max) {
+          const bias = Math.pow(Math.random(), 2);
+          return Math.min(max, min + Math.floor(bias * (max - min + 1)));
+        },
+        generateBoxes() {
+          this.boxes = Array.from({ length: this.amount }, () => ({
+            colSpan: this.generateSmallSpan(1, 4),
+            rowSpan: this.generateSmallSpan(1, 5)
+          }))
+        },
+        checkBoxLimit(event) {
+          const value = Number(event.target.value)
+          if (value < 0) {
+              this.amount = 0
+            } else if (value > 12) {
+              this.amount = 12
+            } else {
+              this.amount = value
+            }
+            this.generateBoxes()
+        }
+      },
+      template: `
+        <div class="card--form" style="text-align: center;">
+          <h1 id="title">Listas y Condicionales</h1>
+          <input name="amount" type="number" style="margin-top: 2rem;" :value="amount" placeholder="Max. 12" @input="checkBoxLimit($event)" />
+          <button type="button" class="button mx-2" @click="generateBoxes">Regenerar cajas</button>
+        </div>
+        <div v-if="amount > 0" class="container--puzzle">
+          <div v-for="(box, index) in boxes" :key="index" :style="{ gridColumn: 'span ' + box.colSpan, gridRow: 'span ' + box.rowSpan }" class="box">
+          </div>
+        </div>
+      `
+    }).mount('#app');
+  </script>
+</body>
+</html>
