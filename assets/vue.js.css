@@ -6,7 +6,7 @@
   --accent: #010126;
   --danger: #b52a1a;
   --shadow: 0 10px 16px rgba(0, 0, 0, 0.3);
-  --radius: 8px;
+  --radius: 6px;
 }
 
 /* Reset + base */
@@ -238,4 +238,16 @@ input.form-control,
   font-size: 0.9rem;
   padding: 8px;
   text-align: center;
+}
+
+/* Image */
+.card-header {
+  padding-top: 15px;
+  padding-left: 10px;
+  padding-right: 10px;
+  color: var(--secondary);
+}
+
+.card-body {
+  padding: 20px;
 }

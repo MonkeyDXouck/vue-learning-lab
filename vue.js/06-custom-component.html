@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Componentes personalizados y slots</title>
+  <link rel="stylesheet" href="../assets/vue.js.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+</head>
+<body>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+  <div id="app"></div>
+
+  <script>
+  const app = Vue.createApp({
+    data() {
+      return {
+        image: {
+          img: "https://www.wearegecko.co.uk/media/50316/mountain-3.jpg",
+          imgAlt: "Image 1",
+          title: "Imagen 1"
+        }
+      }
+    },
+    methods: {
+      onImageUpdated(newImage) {
+        this.image.img = newImage
+      }
+    },
+    template: `
+      <div class="container">
+        <ImageCard :image="image" @image-updated="onImageUpdated" />
+      </div>
+    `
+  })
+
+  app.component("ImageCard", {
+    props: {
+      image: { type: Object, required: true }
+    },
+    emits: ["image-updated"],
+    data() {
+      return {
+        draftUrl: this.image.img,
+        committedUrl: this.image.img,
+        feedback: ""
+      }
+    },
+    methods: {
+      isValidImageUrl(value) {
+        try {
+          const url = new URL(value)
+          return /\.(jpe?g|png|gif|bmp|webp|svg|avif)$/i.test(url.pathname)
+        } catch (error) {
+          return false
+        }
+      },
+      handleInputChange(event) {
+        const newValue = event.target.value
+        this.draftUrl = newValue
+
+        if (newValue.trim() === "") {
+          this.feedback = "La URL no puede estar vacía."
+          return
+        }
+
+        if (this.isValidImageUrl(newValue)) {
+          this.committedUrl = newValue
+          this.feedback = ""
+          this.$emit("image-updated", newValue)
+        } else {
+          this.feedback = "Por favor ingresa una URL válida de imagen."
+        }
+      }
+    },
+    template: `
+      <div class="card">
+        <div class="card-header">
+          <slot name="header">
+            <h1 id="title">{{ image.title }}</h1>
+          </slot>
+        </div>
+        <div class="card-body">
+          <slot name="body">
+            <img :src="committedUrl" :alt="image.imgAlt" class="card-img">
+          </slot>
+          <slot name="input">
+            <div style="margin-top: 16px;">
+              <input 
+                id="image-url"
+                :value="draftUrl" 
+                @input="handleInputChange"
+                type="text"
+                class="form-control" 
+                placeholder="Ingresa URL de imagen"
+                aria-label="URL de imagen"
+              />
+              <p v-if="feedback" class="error-message">{{ feedback }}</p>
+            </div>
+          </slot>
+        </div>
+      </div>
+    `
+  })
+  app.mount("#app")
+  </script>
+</body>
+</html>
