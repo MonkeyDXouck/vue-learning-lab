@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Communication between components</title>
+    <link rel="stylesheet" href="../assets/vue.js.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <script>
+      const app = Vue.createApp({
+        data() {
+          return {
+            colors: ["red", "green", "blue", "grey"],
+            title: "Comunicación entre componentes",
+            color: "#F0F0F9"
+          };
+        },
+        provide: {
+          inputLabel: "Cambia el título:"
+        },
+        methods: {
+          changeColor(color) {
+            const colorMap = {
+              red: "#F28B82",
+              green: "#81C995",
+              blue: "#AECBFA",
+              grey: "#E8EAED"
+            };
+            this.color = colorMap[color] || this.color;
+          }
+        },
+        template: `
+          <div class="container">
+            <v-card :color="color">
+              <template #header>
+                <h1>{{ title }}</h1>
+              </template>
+              <template #body>
+                <form class="mini-form" @submit.prevent>
+                  <v-input id="title-input" v-model:title="title" />
+                  <label>Cambia el color:</label>
+                  <ul>
+                    <v-list-item v-for="color in colors" :key="color" :text="color" @changeColor="changeColor(color)" />
+                  </ul>
+                </form>
+              </template>
+            </v-card>
+          </div>
+        `
+      });
+
+      app.component("v-card", {
+        props: {
+          color: { type: String }
+        },
+        template: `
+          <div class="card" :style="{ backgroundColor: color }">
+            <div class="card-header">
+              <slot name="header"></slot>
+            </div>
+            <div class="card-body">
+              <slot name="body"></slot>
+            </div>
+          </div>
+        `
+      });
+      
+      app.component("v-list-item", {
+        props: {
+          text: { type: String }
+        },
+        methods: {
+          handleChangeColor() {
+            this.$emit("changeColor");
+          }
+        },
+        template: `<li @click="handleChangeColor">{{ text }}</li>`
+      });
+
+      app.component("v-input", {
+        props: {
+          title: { type: String}
+        },
+        inject: ["inputLabel"],
+        methods: {
+          updateValue(event) {
+            this.$emit("update:title", event.target.value);
+          }
+        },
+        template: `
+          <label for="title-input">{{ inputLabel }}</label>
+          <input type="text" :value="title" @input="updateValue" />
+          `
+      });
+      const vm = app.mount('#app');
+    </script>
+  </body>
+</html>
